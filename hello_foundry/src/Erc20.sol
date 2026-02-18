@@ -9,17 +9,17 @@ contract Erc20 {
     uint8 public decimals;
     uint256 private _totalSupply;
 
-    // Balances
+    // balances
     mapping(address => uint256) private balances;
 
-    // Allowances
+    // allowances
     mapping(address => mapping(address => uint256)) private allowances;
 
-    // Events
+    // events
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    // Constructor
+    // constructor
     constructor(
         string memory _name,
         string memory _symbol,
@@ -33,35 +33,35 @@ contract Erc20 {
         _mint(msg.sender, initialSupply);
     }
 
-    // Total supply
+    // total supply
     function totalSupply() public view returns (uint256) {
         return _totalSupply;
     }
 
-    // Balance
+    // balance
     function balanceOf(address account) public view returns (uint256) {
         return balances[account];
     }
 
-    // Transfer
+    // transfer
     function transfer(address to, uint256 amount) public returns (bool) {
         _transfer(msg.sender, to, amount);
         return true;
     }
 
-    // Approve
+    // approve
     function approve(address spender, uint256 amount) public returns (bool) {
         allowances[msg.sender][spender] = amount;
         emit Approval(msg.sender, spender, amount);
         return true;
     }
 
-    // Allowance
+    // allowance
     function allowance(address owner, address spender) public view returns (uint256) {
         return allowances[owner][spender];
     }
 
-    // Transfer from
+    // transfer from
     function transferFrom(address from, address to, uint256 amount) public returns (bool) {
         uint256 currentAllowance = allowances[from][msg.sender];
         require(currentAllowance >= amount, "Allowance exceeded");
@@ -72,7 +72,6 @@ contract Erc20 {
         return true;
     }
 
-    // Internal transfer
     function _transfer(address from, address to, uint256 amount) internal {
         require(to != address(0), "Invalid address");
         require(balances[from] >= amount, "Insufficient balance");
@@ -83,7 +82,7 @@ contract Erc20 {
         emit Transfer(from, to, amount);
     }
 
-    // Internal mint
+    // internal mint
     function _mint(address to, uint256 amount) internal {
         require(to != address(0), "Invalid address");
 
