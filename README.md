@@ -2,11 +2,11 @@
 
 In Solidity, data can be stored in three main locations:
 
-1.  Storage – permanent blockchain storage
+1.  Storage: permanent blockchain storage
 
-2. Memory – temporary during function execution
+2. Memory :temporary during function execution
 
-3. Calldata – read-only function input data
+3. Calldata: read-only function input data
 
 Depending on how and where they are defined, structs, maps, and arrays have different storage locations. They can be stored in the persistent storage of the blockchain, temporary memory during function execution, or immutable calldata for function parameters.
 
