@@ -91,8 +91,8 @@ contract School_Management {
         _studentAge,
         _studentDepartment,
         _studentLevel,
-        block.timestamp,
         _studentAddress,
+        block.timestamp,
         true,
         true
     );
@@ -119,8 +119,8 @@ contract School_Management {
         _staffName,
         _staffRole,
         _salary,
-        0
         _staffAddress,
+        0,
         true,
         true
     );
