@@ -140,12 +140,8 @@ contract School_Management {
         for (uint i = 0; i < staffLists.length; i++) {
 
             if (staffLists[i].staffAddress == _staff) {
-                // payable(_staff).transfer(staffs[i].salary);
+                payable(_staff).transfer(staffs[i].salary);
 
-                /* used call value becusec solidity transfer() and send() are now considered unsafe for sending 
-                Ether due to gas limitations*/
-                (bool sent, ) = _staff.call{value: staffLists[i].salary}("");
-                require(sent, "Failed to send Ether");
 
                 emit StaffPaid(_staff, staffLists[i].salary, block.timestamp);
             }
