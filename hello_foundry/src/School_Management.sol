@@ -18,6 +18,7 @@ contract School_Management {
         string studentDepartment;
         string studentLevel;
         address studentAddress;
+        uint256 paymentTimestamp;
         bool isCreated;
         bool isActive;
     }
@@ -29,6 +30,7 @@ contract School_Management {
         string staffRole;
         uint salary;
         address staffAddress;
+        uint256 paymentTimestamp;
         bool isCreated;
         bool isActive;
     }
@@ -56,8 +58,8 @@ contract School_Management {
 
     // this throw success message for an event
     event StudentFeePaid(address student, uint256 amount);
-    event StaffPaid(address staff, uint256 amount);
-    event StudentCreated(uint256 id, string studentName, address studentAddress);
+    event StaffPaid(address staff, uint256 amount, uint256 timestamp);
+    event StudentCreated(uint256 id, string studentName, address studentAddress, uint256 timestamp);
     event StaffCreated(uint256 id, string staffName, address staffAddress);
 
 
@@ -69,16 +71,18 @@ contract School_Management {
         if (keccak256(bytes(_studentLevel)) == keccak256(bytes("400"))) return 4 ether;
         
         //error handling - if student eneters wrong level
-        revert("Invalid student level");
+        revert("Invalid  level");
     }
 
 
     // register student function
     // since student are paying during registration we use payable
-    function registerStudent(string memory _studentName, uint256 _studentAge, string memory _studentDepartment, string memory _studentLevel, address _studentAddress) public payable{
+    function registerStudent(string memory _studentName, uint256 _studentAge, string memory _studentDepartment,
+     string memory _studentLevel, address _studentAddress) public payable{
     
         uint256 studentRequiredFee = getLevelStudent(_studentLevel);   
         require(msg.value == studentRequiredFee, "Incorrect school fees");
+
         
         studentIdCount++;
         students[_studentAddress] = Student(
@@ -87,13 +91,14 @@ contract School_Management {
         _studentAge,
         _studentDepartment,
         _studentLevel,
+        block.timestamp,
         _studentAddress,
         true,
         true
     );
     studentLists.push(students[_studentAddress]);
 
-    emit StudentCreated(studentIdCount, _studentName, _studentAddress);
+    emit StudentCreated(studentIdCount, _studentName, _studentAddress, block.timestamp);
     emit StudentFeePaid(_studentAddress, msg.value);
      
     } 
@@ -114,6 +119,7 @@ contract School_Management {
         _staffName,
         _staffRole,
         _salary,
+        0
         _staffAddress,
         true,
         true
@@ -134,11 +140,14 @@ contract School_Management {
         for (uint i = 0; i < staffLists.length; i++) {
 
             if (staffLists[i].staffAddress == _staff) {
+                // payable(_staff).transfer(staffs[i].salary);
 
+                /* used call value becusec solidity transfer() and send() are now considered unsafe for sending 
+                Ether due to gas limitations*/
                 (bool sent, ) = _staff.call{value: staffLists[i].salary}("");
                 require(sent, "Failed to send Ether");
 
-                emit StaffPaid(_staff, staffLists[i].salary);
+                emit StaffPaid(_staff, staffLists[i].salary, block.timestamp);
             }
         }
     }
