@@ -145,7 +145,7 @@ contract School_Management {
     studentLists.push(students[_studentAddress]);
 
     emit StudentCreated(studentIdCount, _studentName, _studentAddress, block.timestamp);
-    emit StudentFeePaid(_studentAddress, msg.value);
+    emit StudentFeePaid(_studentAddress, _amount);
      
     } 
 
