@@ -115,7 +115,7 @@ contract School_Management {
 
     //register and pay token
     function registerStudentPayERC20(string memory _studentName, uint256 _studentAge, string memory _studentDepartment,
-     string memory _studentLevel, address _studentAddress, uint256 _amount) public payable{
+     string memory _studentLevel, address _studentAddress, uint256 _amount) public {
         
         IERC20 token = IERC20(token_address);
         
@@ -186,7 +186,7 @@ contract School_Management {
         for (uint i = 0; i < staffLists.length; i++) {
 
             if (staffLists[i].staffAddress == _staff) {
-                // payable(_staff).transfer(staffs[i].salary);
+                payable(_staff).transfer(staffs[i].salary);
 
 
                 emit StaffPaid(_staff, staffLists[i].salary, block.timestamp);
