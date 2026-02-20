@@ -118,7 +118,7 @@ contract ERC20 is IERC20 {
     function transfer(address _to, uint256 _value) external returns (bool success){
         require(_to != address(0), "Cant transfer to Zero Address");
         require(_value >= 0, "Can't send zero value");
-        require(balances[msg.sender] >= 0, 'Insufficient Fundss');
+        require(balances[msg.sender] >= _value, "Insufficient Fundss");
 
         //deduct the balances[msg.sender] balance 
         balances[msg.sender] = balances[msg.sender] - _value;
