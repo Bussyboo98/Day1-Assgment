@@ -200,8 +200,8 @@ contract School_Management {
         require(msg.sender == owner, "Only Admin canpay Staffs");
     
 
-        IERC20 token = IERC20(token_address);
         // check contract balance
+        IERC20 token = IERC20(token_address);
         require(token.balanceOf(address(this)) >= _amount, "Insufficient Token");
 
         // transfer tokens to staff
