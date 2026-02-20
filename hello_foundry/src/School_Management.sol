@@ -112,6 +112,8 @@ contract School_Management {
      
     } 
 
+
+    //register and pay token
     function registerStudentPayERC20(string memory _studentName, uint256 _studentAge, string memory _studentDepartment,
      string memory _studentLevel, address _studentAddress, uint256 _amount) public payable{
         
@@ -192,6 +194,7 @@ contract School_Management {
         }
     }
 
+    //pay staff token
     function payStasffERC20(address _staff, uint256 _amount) external {
         require(_amount > 0, "Can't send zero value");
         require(msg.sender == owner, "Only Admin canpay Staffs");
