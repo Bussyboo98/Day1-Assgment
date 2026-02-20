@@ -1,13 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.3;
 
+import {IERC20} from "./IERC20.sol";
+
 contract School_Management {
     //owner of the contract
     address public owner;
+    address token_address;
+
+
 
     //constructor set as owner
-    constructor() {
+    constructor(address _token_address) {
         owner = msg.sender; 
+        token_address = _token_address;
     }
     
     //student struct
@@ -52,6 +58,9 @@ contract School_Management {
     mapping(address => uint256) public studentFees;
     mapping(address => uint256) public staffBalance;
 
+    mapping(address => uint256) erc20Savingsbalance;
+
+
     //add +1 to stdent and staff created  i.e  update the numbers of student band staff created
     uint256 public studentIdCount = 0;
     uint256 public staffIdCount = 0;
@@ -82,6 +91,41 @@ contract School_Management {
     
         uint256 studentRequiredFee = getLevelStudent(_studentLevel);   
         require(msg.value == studentRequiredFee, "Incorrect school fees");
+
+        
+        studentIdCount++;
+        students[_studentAddress] = Student(
+        studentIdCount,
+        _studentName,
+        _studentAge,
+        _studentDepartment,
+        _studentLevel,
+        _studentAddress,
+        block.timestamp,
+        true,
+        true
+    );
+    studentLists.push(students[_studentAddress]);
+
+    emit StudentCreated(studentIdCount, _studentName, _studentAddress, block.timestamp);
+    emit StudentFeePaid(_studentAddress, msg.value);
+     
+    } 
+
+    function registerStudentPayERC20(string memory _studentName, uint256 _studentAge, string memory _studentDepartment,
+     string memory _studentLevel, address _studentAddress, uint256 _amount) public payable{
+        
+        IERC20 token = IERC20(token_address);
+        
+        uint256 studentRequiredFee = getLevelStudent(_studentLevel);   
+        require(_amount == studentRequiredFee, "Incorrect school token fees");
+
+        require(token.balanceOf(_studentAddress) >= _amount, "Insufficient token balance");
+        require(token.allowance(_studentAddress, address(this)) >= _amount, "Contract not approved for tokens");
+
+        // transfer tokens from student to contract
+        bool success = token.transferFrom(_studentAddress, address(this), _amount);
+        require(success, "Token transfer failed");
 
         
         studentIdCount++;
@@ -140,12 +184,29 @@ contract School_Management {
         for (uint i = 0; i < staffLists.length; i++) {
 
             if (staffLists[i].staffAddress == _staff) {
-                payable(_staff).transfer(staffs[i].salary);
+                // payable(_staff).transfer(staffs[i].salary);
 
 
                 emit StaffPaid(_staff, staffLists[i].salary, block.timestamp);
             }
         }
+    }
+
+    function payStasffERC20(address _staff, uint256 _amount) external {
+        require(_amount > 0, "Can't send zero value");
+        require(msg.sender == owner, "Only Admin canpay Staffs");
+    
+
+        IERC20 token = IERC20(token_address);
+        // check contract balance
+        require(token.balanceOf(address(this)) >= _amount, "Insufficient Token");
+
+        // transfer tokens to staff
+        bool success = token.transfer(_staff, _amount);
+        require(success, "Transfer failed");
+
+        emit StaffPaid(_staff, _amount, block.timestamp);
+        
     }
 
     // check contract balance
