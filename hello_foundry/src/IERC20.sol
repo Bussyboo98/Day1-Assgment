@@ -1,3 +1,5 @@
+pragma solidity ^0.8.3;
+
 // INTERFACE
 interface IERC20 {
     function name() external view returns (string memory);

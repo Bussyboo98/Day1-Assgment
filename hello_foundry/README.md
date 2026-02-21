@@ -2,65 +2,14 @@
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
-Foundry consists of:
+**SaveEther-Erc20practice**
+- **Network:** Lisk Sepolia Testnet
+- **Contract Address:** [0xa06E2713c68D0985E0E90547a31cDE7Ab9A2265f](https://sepolia-blockscout.lisk.com/address/0xa06E2713c68D0985E0E90547a31cDE7Ab9A2265f)
+- **Block Explorer:** [Blockscout Lisk Sepolia](https://sepolia-blockscout.lisk.com)
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
 
-## Documentation
+**School Management**
+- **Network:** Lisk Sepolia Testnet
+- **Contract Address:** [0x575d75AC457a4cf5C41e3b9D12a0286DA3b3636B](https://sepolia-blockscout.lisk.com/address/0x575d75AC457a4cf5C41e3b9D12a0286DA3b3636B)
+- **Block Explorer:** [Blockscout Lisk Sepolia](https://sepolia-blockscout.lisk.com)
 
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```

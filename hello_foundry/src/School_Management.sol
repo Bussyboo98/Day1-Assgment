@@ -39,6 +39,7 @@ contract School_Management {
         uint256 paymentTimestamp;
         bool isCreated;
         bool isActive;
+        bool isSuspended;
     }
 
     
@@ -70,6 +71,8 @@ contract School_Management {
     event StaffPaid(address staff, uint256 amount, uint256 timestamp);
     event StudentCreated(uint256 id, string studentName, address studentAddress, uint256 timestamp);
     event StaffCreated(uint256 id, string staffName, address staffAddress);
+    event StudentRemoved(address studentAddress, uint256 timestamp);
+    
 
 
     //level function - each level pays 1 ETH as it increases
@@ -113,7 +116,7 @@ contract School_Management {
     } 
 
 
-    //register and pay token
+    //student register and pay token
     function registerStudentPayERC20(string memory _studentName, uint256 _studentAge, string memory _studentDepartment,
      string memory _studentLevel, address _studentAddress, uint256 _amount) public {
         
@@ -154,30 +157,88 @@ contract School_Management {
         return studentLists.length;
     }
 
+
+    function removeStudent(address _studentAddress) public {
+
+        require(msg.sender == owner, "Only Admin can remove students");
+
+        require(students[_studentAddress].studentAddress != address(0), "Student Address not found");
+
+        //delete student from map
+        delete students[_studentAddress];
+
+        // remove student from list
+        for (uint8 i; i < studentLists.length; i++) {
+            if (studentLists[i].studentAddress == _studentAddress) {
+                studentLists[i] = studentLists[studentLists.length - 1];
+                studentLists.pop();
+            }
+     
+        } 
+        emit StudentRemoved(_studentAddress, block.timestamp);
+
+    }
     //register staff
     function registerStaff(string memory _staffName, string memory _staffRole, uint _salary, address _staffAddress) public {
 
         require(msg.sender == owner, "Only Admin can register staff");
         
         staffIdCount++;
-        staffs[_staffAddress] = Staff(
-        staffIdCount,
-        _staffName,
-        _staffRole,
-        _salary,
-        _staffAddress,
-        0,
-        true,
-        true
-    );
-    staffLists.push(staffs[_staffAddress]);
-    emit StaffCreated(staffIdCount, _staffName, _staffAddress);
+            staffs[_staffAddress] = Staff(
+            staffIdCount,
+            _staffName,
+            _staffRole,
+            _salary,
+            _staffAddress,
+            0,
+            true,
+            true, 
+            false
+        );
+        staffLists.push(staffs[_staffAddress]);
+        emit StaffCreated(staffIdCount, _staffName, _staffAddress);
     } 
 
      //get the total staffs
     function getTotalStaff() public view returns (uint256) {
         return staffLists.length;
     }
+
+
+
+    function suspendStaff(address _staffAddress) public{
+        require(msg.sender == owner, "Only Admin can suspend staff");
+
+        require(staffs[_staffAddress].staffAddress != address(0), "Staff with this address does not exist");
+
+        staffs[_staffAddress].isSuspended = true;
+    }
+
+
+     //register staff
+    function employStaff(string memory _staffName, string memory _staffRole, uint _salary, address _staffAddress) public {
+
+        require(msg.sender == owner, "Only Admin can register staff");
+
+        require(!staffs[_staffAddress].isCreated, "Staff exist already");
+        
+        staffIdCount++;
+            staffs[_staffAddress] = Staff(
+            staffIdCount,
+            _staffName,
+            _staffRole,
+            _salary,
+            _staffAddress,
+            0,
+            true,
+            true, 
+            false
+        );
+        staffLists.push(staffs[_staffAddress]);
+        emit StaffCreated(staffIdCount, _staffName, _staffAddress);
+    } 
+
+
 
     //pay staffs salary  
     function payStaffSalary(address _staff) public {
@@ -186,7 +247,8 @@ contract School_Management {
         for (uint i = 0; i < staffLists.length; i++) {
 
             if (staffLists[i].staffAddress == _staff) {
-                payable(_staff).transfer(staffs[i].salary);
+                (bool success, ) = _staff.call{value: staffLists[i].salary}("");
+                require(success, "Transfer failed");
 
 
                 emit StaffPaid(_staff, staffLists[i].salary, block.timestamp);
