@@ -35,7 +35,7 @@ contract PropertyManagement is AccessControl {
         uint256 price,uint256 timestamp);
 
     event PropertyRemoved(uint256  id);
-    event PropertyPurchased(uint256  id, address  oldOwner,  address  newOwner );
+    event PropertyPurchased(uint256  id, address oldOwner,  address newOwner );
 
     constructor(address _tokenAddress) {
         propertyPaymentToken = IERC20(_tokenAddress);
@@ -61,7 +61,7 @@ contract PropertyManagement is AccessControl {
    //create the property
     function createProperty(string memory _propertyName, string memory _propertyLocation, uint256 _propertyPrice) public {
         require(_propertyPrice == 0, "Invalid Price");
-        }
+        
 
         propertyCount++;
         properties[propertyCount] = Property({
@@ -74,7 +74,6 @@ contract PropertyManagement is AccessControl {
             isActive: true,
             isForSale: true
         });
-
         emit PropertyCreated(propertyCount, _propertyName, _propertyLocation, msg.sender, _propertyPrice,block.timestamp);
     }
 
@@ -88,39 +87,36 @@ contract PropertyManagement is AccessControl {
  
     //buying of properties
     function buyProperty(uint256 _id) public propertyExists(_id){
-        Property storage prop = properties[_id];
+        Property storage buy_property = properties[_id];
 
-        if (!prop.isForSale) {
+        if (!buy_property.isForSale) {
             revert NotForSale();
         }
 
-        if (msg.sender == prop.propertyCreator) {
+        if (msg.sender == buy_property.propertyCreator) {
             revert CannotBuyOwnProperty();
         }
 
         bool success = propertyPaymentToken.transferFrom(
             msg.sender,
-            prop.propertyCreator,
-            prop.propertyPrice
+            buy_property.propertyCreator,
+            buy_property.propertyPrice
         );
 
         if (!success) {
             revert PaymentFailed();
         }
 
-        address oldOwner = prop.propertyCreator;
+        address oldOwner = buy_property.propertyCreator;
 
-        prop.propertyCreator = msg.sender;
-        prop.isForSale = false;
+        buy_property.propertyCreator = msg.sender;
+        buy_property.isForSale = false;
 
         emit PropertyPurchased(_id, oldOwner, msg.sender);
     }
 
     //admin 
-    function updatePaymentToken(address _newToken)
-        public
-        onlyRole(ADMIN_ROLE)
-    {
+    function updatePaymentToken(address _newToken) public onlyRole(ADMIN_ROLE){
         propertyPaymentToken = IERC20(_newToken);
     }
 
@@ -128,4 +124,5 @@ contract PropertyManagement is AccessControl {
     function getProperty(uint256 _id) public view returns (Property memory) {
         return properties[_id];
     }
+
 }
