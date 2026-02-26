@@ -78,7 +78,7 @@ contract PropertyManagement is AccessControl {
     }
 
     //remove property by creator
-    function removeProperty(uint256 _id) publicpropertyExists(_id) onlyPropertyOwner(_id){
+    function removeProperty(uint256 _id) public propertyExists(_id) onlyPropertyOwner(_id){
         delete properties[_id];
 
         emit PropertyRemoved(_id);
